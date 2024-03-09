@@ -112,7 +112,7 @@ func (w *WSTunnel) PersistentDial(tunnelEndpoint string, bindWriteChannel chan U
 
 						_, err = conn.Write(append([]byte(w.ShortClientID), append(bs, rt.Data...)...))
 						if err != nil {
-							logger.Info("write:", err)
+							logger.Infof("write: %s", err)
 							return
 						}
 						lastActivityStamp = time.Now().Unix()

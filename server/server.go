@@ -3,26 +3,25 @@ package server
 import (
 	"context"
 	"fmt"
+	"io"
+	"math/rand"
+	"strings"
+	"time"
+
 	"github.com/bepass-org/bepass/bufferpool"
 	"github.com/bepass-org/bepass/config"
 	"github.com/bepass-org/bepass/dialer"
 	"github.com/bepass-org/bepass/doh"
+	"github.com/bepass-org/bepass/logger"
 	"github.com/bepass-org/bepass/resolve"
 	"github.com/bepass-org/bepass/socks5"
 	"github.com/bepass-org/bepass/transport"
 	"github.com/bepass-org/bepass/utils"
-	"io"
-	"math/rand"
-	"os"
-	"os/signal"
-	"strings"
-	"syscall"
-	"time"
 )
 
 var s5 *socks5.Server
 
-func Run(captureCTRLC bool) error {
+func Run(verbose bool) error {
 	config.G.UserSession = fmt.Sprintf("%08d", rand.Intn(1000))
 	appCache := utils.NewCache(time.Duration(config.G.DnsCacheTTL) * time.Second)
 
@@ -96,17 +95,13 @@ func Run(captureCTRLC bool) error {
 		LocalResolver:         localResolver,
 		Transport:             tunnelTransport,
 	}
-
-	if captureCTRLC {
-		c := make(chan os.Signal)
-		signal.Notify(c, os.Interrupt, syscall.SIGTERM)
-		go func() {
-			<-c
-			_ = ShutDown()
-			os.Exit(0)
-		}()
+	if verbose {
+		logger.SetVerbose(true)
+		logger.InitLogger()
+	}else{
+		logger.SetVerbose(false)
+		logger.InitLogger()
 	}
-
 	if workerConfig.WorkerEnabled && !workerConfig.WorkerDNSOnly {
 		s5 = socks5.NewServer(
 			socks5.WithConnectHandle(func(ctx context.Context, w io.Writer, req *socks5.Request) error {

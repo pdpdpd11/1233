@@ -54,7 +54,7 @@ func (a *Adapter) Write(b []byte) (int, error) {
 		if err != nil {
 			return a.conn.Write(b)
 		}
-		logger.Info("found http packet host: %s", host)
+		logger.Infof("found http packet host: %s", host)
 		_, err = a.conn.Write(httpPacketData)
 		if err != nil {
 			return 0, err

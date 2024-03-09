@@ -95,7 +95,8 @@ func NewServer(opts ...Option) *Server {
 // ListenAndServe is used to create a listener and serve on it
 func (sf *Server) ListenAndServe(network, addr string) error {
 	prx := goproxy.NewProxyHttpServer()
-	prx.Verbose = true
+	// Currently this verbosity is not needed, as it's not following zerolog logic.
+	// prx.Verbose = logger.GetVerbose()
 
 	sf.bindAddress = addr
 

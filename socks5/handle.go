@@ -219,7 +219,7 @@ func (sf *Server) handleAssociate(ctx context.Context, writer io.Writer, request
 	}
 	//defer bindLn.Close()
 
-	logger.Info("", "target addr ", target.RemoteAddr(), " listen addr: ", bindLn.LocalAddr())
+	logger.Infof("target addr %s listen addr: %s", target.RemoteAddr(), bindLn.LocalAddr())
 	// send BND.ADDR and BND.PORT, client used
 	if err = SendReply(writer, statute.RepSuccess, bindLn.LocalAddr()); err != nil {
 		return fmt.Errorf("failed to send reply, %v", err)
